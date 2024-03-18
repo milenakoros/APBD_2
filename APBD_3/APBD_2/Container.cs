@@ -7,10 +7,15 @@ public class Container
     private double _containerWeight;
     private double _depth;
     private double _maxWeight;
-    private double _serialNumber;
+    private String _serialNumber;
     private static int counter = 0;
-    
-    
+
+    public Container(double _containerWeight, double _maxWeight)
+    {
+        this._containerWeight = _containerWeight;
+        this._maxWeight = _maxWeight;
+        this._serialNumber = CreateSerialNumber();
+    }
     public double Weight
     {
         get { return _weight;}
@@ -50,4 +55,9 @@ public class Container
             _containerWeight = value;
         }
     }
+
+    private static String CreateSerialNumber()
+    {
+        return "KON-X-" + counter++;
+    } 
 }
