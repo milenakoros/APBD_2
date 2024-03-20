@@ -1,6 +1,6 @@
 ﻿namespace APBD_3;
 
-public class Container
+public abstract class Container
 {
     private double _weight;
     private double _height;
@@ -10,12 +10,16 @@ public class Container
     private String _serialNumber;
     private static int counter = 0;
 
-    public Container(double _containerWeight, double _maxWeight)
+    protected Container(double weight, double height, double containerWeight, double depth, double maxWeight, char kind )
     {
-        this._containerWeight = _containerWeight;
-        this._maxWeight = _maxWeight;
-        this._serialNumber = CreateSerialNumber();
+        _weight = weight;
+        _height = height;
+        _containerWeight = containerWeight;
+        _depth = depth;
+        _maxWeight = maxWeight;
+        _serialNumber = CreateSerialNumber(kind);
     }
+
     public double Weight
     {
         get { return _weight;}
@@ -56,8 +60,31 @@ public class Container
         }
     }
 
-    private static String CreateSerialNumber()
+    private static String CreateSerialNumber(char kind)
     {
-        return "KON-X-" + counter++;
+        return "KON-" + kind + "-" + counter++;
     } 
+}
+
+public class GasContainer : Container
+{
+    public GasContainer(double weight, double height, double containerWeight, double depth, double maxWeight) : base(weight, height, containerWeight, depth, maxWeight, 'G')
+    {
+        
+    }
+}
+
+public class CoolingContainer : Container
+{
+    public CoolingContainer(double weight, double height, double containerWeight, double depth, double maxWeight) : base(weight, height, containerWeight, depth, maxWeight, 'C')
+    {
+        
+    }
+}
+
+
+public class IHazardNotifier : Exception {
+    public IHazardNotifier(string message) : base(message)
+    {
+    }
 }
