@@ -1,66 +1,205 @@
-﻿using System;
+﻿namespace APBD_3;
+
+using System;
 using System.Collections.Generic;
 
-namespace APBD_3
+public class Program
 {
-    class Program
+    static List<ContainerShip> _ships = new List<ContainerShip>();
+    static List<Container> _containers = new List<Container>();
+
+    static void Main(string[] args)
     {
-        static void Main(string[] args)
+        while (true)
         {
-            // Initialize containers
-            LiquidContainer liquidContainer = new LiquidContainer(2.0, 10.0, 1.5, 500.0);
-            GasContainer gasContainer = new GasContainer(2.0, 10.0, 1.5, 500.0);
-            CoolingContainer coolingContainer = new CoolingContainer(2.0, 10.0, 1.5, 500.0, -18.0);
-
-            // Initialize the container ship
-            List<Container> containers = new List<Container> { liquidContainer, gasContainer, coolingContainer };
-            ContainerShip ship = new ContainerShip(containers, 20.0, 10, 10000.0);
-
-            // Load cargo into the liquid container
-            try
+            DisplayMenu();
+            string choice = GetUserChoice();
+            switch (choice)
             {
-                liquidContainer.ContainerLoading("Water", 200.0);
+                case "1":
+                    AddShip();
+                    break;
+                case "2":
+                    RemoveShip();
+                    break;
+                case "3":
+                    AddContainer();
+                    break;
+                case "4":
+                    AssignContainerToShip();
+                    break;
+                case "5":
+                    RemoveContainer();
+                    break;
+                case "6":
+                    DisplayShipsAndContainers();
+                    break;
+                case "7":
+                    return;
+                default:
+                    Console.WriteLine("Nieprawidłowy wybór. Spróbuj ponownie.");
+                    break;
             }
-            catch (OverfillException ex)
+        }
+    }
+
+    static void DisplayMenu()
+    {
+        DisplayShipsAndContainers();
+        Console.WriteLine("\nMożliwe akcje:");
+        Console.WriteLine("1. Dodaj kontenerowiec");
+        if (_containers.Count != 0)
+        {
+            Console.WriteLine("2. Usun kontenerowiec");
+            Console.WriteLine("3. Dodaj kontener");
+            Console.WriteLine("4. Przypisz kontener do statku");
+            Console.WriteLine("5. Usuń kontener");
+            Console.WriteLine("6. Wyświetl statki i kontenery");
+            Console.WriteLine("7. Wyjście");
+        }
+    }
+
+    static string GetUserChoice()
+    {
+        Console.Write("Wybierz akcję: ");
+        return Console.ReadLine();
+    }
+
+    static void AddShip()
+    {
+        Console.Write("Podaj nazwę statku: ");
+        string name = Console.ReadLine();
+        Console.Write("Podaj prędkość statku: ");
+        double speed = double.Parse(Console.ReadLine());
+        Console.Write("Podaj maksymalną liczbę kontenerów: ");
+        int maxContainerNum = int.Parse(Console.ReadLine());
+        Console.Write("Podaj maksymalny ciężar: ");
+        double maxWeight = double.Parse(Console.ReadLine());
+
+        _ships.Add(new ContainerShip(name, speed, maxContainerNum, maxWeight));
+    }
+
+    static void RemoveShip()
+    {
+        Console.Write("Podaj nazwę statku do usunięcia: ");
+        string name = Console.ReadLine();
+        var shipToRemove = _ships.Find(s => s.ContainerShipName == name);
+        if (shipToRemove != null)
+        {
+            _ships.Remove(shipToRemove);
+            Console.WriteLine("Stąg usunięty.");
+        }
+        else
+        {
+            Console.WriteLine("Nie znaleziono statku.");
+        }
+    }
+
+    static void AddContainer()
+    {
+        Console.Write("Podaj typ kontenera (L - Liquid, G - Gas, C - Cooling): ");
+        char type = Console.ReadLine()[0];
+        if (!(type=='L' || type == 'l' || type == 'G' || type == 'g' || type == 'C' || type=='c' ))
+        {
+            Console.WriteLine("Nieprawidłowy typ kontenera.");
+        }
+        else
+        {
+            Console.Write("Podaj wysokość kontenera: ");
+            double height = double.Parse(Console.ReadLine());
+            Console.Write("Podaj wagę kontenera: ");
+            double weight = double.Parse(Console.ReadLine());
+            Console.Write("Podaj głębokość kontenera: ");
+            double depth = double.Parse(Console.ReadLine());
+            Console.Write("Podaj maksymalną wagę ładunku: ");
+            double maxLoadWeight = double.Parse(Console.ReadLine());
+            Console.Write("Czy kontener jest niebezpieczny (y/n)? ");
+            bool isDangerous = Console.ReadLine() == "y";
+
+            if (type == 'L' || type == 'l' )
             {
-                Console.WriteLine(ex.Message);
+                _containers.Add(new LiquidContainer(height, weight, depth, maxLoadWeight, isDangerous));
             }
-
-            // Load cargo into the gas container
-            try
+            else if (type == 'G' || type == 'g' )
             {
-                gasContainer.ContainerLoading("Natural Gas", 300.0);
+                Console.Write("Podaj ciśnienie w kontenerze: ");
+                double pressure = double.Parse(Console.ReadLine());
+                _containers.Add(new GasContainer(height, weight, depth, maxLoadWeight, pressure));
             }
-            catch (OverfillException ex)
+            else if (type == 'C'|| type=='c')
             {
-                Console.WriteLine(ex.Message);
+                Console.Write("Podaj temperaturę w kontenerze: ");
+                double temperature = double.Parse(Console.ReadLine());
+                _containers.Add(new CoolingContainer(height, weight, depth, maxLoadWeight, temperature));
             }
+        }
+    }
 
-            // Load cargo into the cooling container
-            try
+    static void AssignContainerToShip()
+    {
+        Console.Write("Podaj nazwę statku: ");
+        string shipName = Console.ReadLine();
+        Console.Write("Podaj numer seryjny kontenera: ");
+        string serialNumber = Console.ReadLine();
+
+        var ship = _ships.Find(s => s.ContainerShipName == shipName);
+        var container = _containers.Find(c => c.SerialNumber == serialNumber);
+
+        if (ship != null && container != null)
+        {
+            ship.AddContainer(container);
+            Console.WriteLine("Kontener przypisany do statku.");
+        }
+        else
+        {
+            Console.WriteLine("Nie znaleziono statku lub kontenera.");
+        }
+    }
+
+    static void RemoveContainer()
+    {
+        Console.Write("Podaj numer seryjny kontenera do usunięcia: ");
+        string serialNumber = Console.ReadLine();
+
+        var containerToRemove = _containers.Find(c => c.SerialNumber == serialNumber);
+        if (containerToRemove != null)
+        {
+            _containers.Remove(containerToRemove);
+            Console.WriteLine("Kontener usunięty.");
+        }
+        else
+        {
+            Console.WriteLine("Nie znaleziono kontenera.");
+        }
+    }
+
+    static void DisplayShipsAndContainers()
+    {
+        Console.WriteLine("Lista kontenerowców:");
+        if (_ships.Count == 0)
+        {
+            Console.WriteLine("Brak");
+        }
+        else
+        {
+            foreach (var ship in _ships)
             {
-                coolingContainer.ContainerLoading("Ice Cream", 100.0);
+                Console.WriteLine(
+                    $"{ship.ContainerShipName} (speed={ship.Speed}, maxContainerNum={ship.MaxContainerNum}, maxWeight={ship.MaxWeight})");
             }
-            catch (OverfillException ex)
+        }
+
+        Console.WriteLine("\nLista kontenerów:");
+        if (_containers.Count == 0)
+        {
+            Console.WriteLine("Brak");
+        }
+        else
+        {
+            foreach (var container in _containers)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine($"{container.SerialNumber} - {container.CargoProductName}");
             }
-
-            // Display information about the ship and its cargo
-            Console.WriteLine(ship.ToString());
-
-            // Remove a container from the ship
-            ship.RemoveContainer(liquidContainer._serialNumber);
-
-            // Display updated information about the ship and its cargo
-            Console.WriteLine(ship.ToString());
-
-            // Replace a container on the ship
-            CoolingContainer newCoolingContainer = new CoolingContainer(2.0, 10.0, 1.5, 500.0, -18.0);
-            ship.ReplacingContainer(coolingContainer._serialNumber, newCoolingContainer);
-
-            // Display final information about the ship and its cargo
-            Console.WriteLine(ship.ToString());
         }
     }
 }

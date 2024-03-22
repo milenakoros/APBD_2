@@ -4,33 +4,42 @@ namespace APBD_3;
 
 public class ContainerShip
 {
-    private List<Container> _containers;
-    private double _speed;
-    private int _maxContainerNum;
-    private double _maxWeight;
+    public List<Container> Containers { get; private set; } = new List<Container>();
+    public string ContainerShipName { get; set; }
+    public double Speed { get; private set; }
+    public int MaxContainerNum { get; private set; }
+    public double MaxWeight { get; private set; }
 
-    public ContainerShip(List<Container> containers, double speed, int maxContainerNum, double maxWeight)
+    public ContainerShip(string containerShipName, double speed, int maxContainerNum, double maxWeight)
     {
-        _containers = containers;
-        _speed = speed;
-        _maxContainerNum = maxContainerNum;
-        _maxWeight = maxWeight;
+        ContainerShipName = containerShipName;
+        Speed = speed;
+        MaxContainerNum = maxContainerNum;
+        MaxWeight = maxWeight;
     }
 
     public void AddContainer(Container container)
     {
-        _containers.Add(container);
+        if (Containers.Count >= MaxContainerNum)
+        {
+            throw new Exception("Cannot add more containers. Maximum number of containers reached.");
+        }
+        if (Containers.Any(c => c.SerialNumber == container.SerialNumber))
+        {
+            throw new Exception("Container with this serial number already exists.");
+        }
+        Containers.Add(container);
     }
     public void AddContainers(List<Container> containers)
     {
-        _containers.AddRange(containers);
+        Containers.AddRange(containers);
     }
 
     public void RemoveContainer(string serialNumber)
     {
-        if (_containers.Exists(container => container._serialNumber == serialNumber))
+        if (Containers.Exists(container => container.SerialNumber == serialNumber))
         {
-            _containers.RemoveAll(container => container._serialNumber == serialNumber);
+            Containers.RemoveAll(container => container.SerialNumber == serialNumber);
             Console.WriteLine($"Removed container with the number: {serialNumber}");
         }
         else
@@ -41,10 +50,10 @@ public class ContainerShip
 
     public void ReplacingContainer(string oldSerialNumber, Container newContainer)
     {
-        if (_containers.Exists(container => container._serialNumber == oldSerialNumber))
+        if (Containers.Exists(container => container.SerialNumber == oldSerialNumber))
         {
-            _containers.RemoveAll(container => container._serialNumber == oldSerialNumber);
-            _containers.Add(newContainer);
+            Containers.RemoveAll(container => container.SerialNumber == oldSerialNumber);
+            Containers.Add(newContainer);
         }
         else
         {
@@ -52,16 +61,25 @@ public class ContainerShip
         }
 
     }
+    public void TransferContainer(ContainerShip targetShip, string serialNumber)
+    {
+        var container = Containers.FirstOrDefault(c => c.SerialNumber == serialNumber);
+        if (container == null)
+        {
+            throw new Exception("Container not found on the source ship.");
+        }
+        Containers.Remove(container);
+        targetShip.AddContainer(container);
+    }
+    
     public override string ToString()
     {
         StringBuilder shipInfo = new StringBuilder();
-        shipInfo.AppendLine($"Container Ship Information:");
-        shipInfo.AppendLine($"Speed: {_speed} knots");
-        shipInfo.AppendLine($"Maximum Number of Containers: {_maxContainerNum}");
-        shipInfo.AppendLine($"Maximum Total Weight: {_maxWeight} kg");
-        shipInfo.AppendLine($"Containers on Board:");
+        shipInfo.AppendLine("Container Ship Information:");
+        shipInfo.AppendLine($"Name: {ContainerShipName}, Speed: {Speed} knots, Maximum Number of Containers: {MaxContainerNum}, Maximum Total Weight: {MaxWeight} kg");
+        shipInfo.AppendLine("Containers on Board:");
 
-        foreach (var container in _containers)
+        foreach (var container in Containers)
         {
             shipInfo.AppendLine(container.ToString());
         }
