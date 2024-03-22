@@ -2,27 +2,26 @@
 
 public abstract class Container
 {
-    private double _weight;
-    private double _height;
+    private double _loadWeight;
+    private double _containerHeight;
     private double _containerWeight;
-    private double _depth;
-    private double _maxWeight;
+    private double _containerDepth;
+    private double _maxLoadWeight;
     private String _serialNumber;
     private static int counter = 0;
 
-    protected Container(double weight, double height, double containerWeight, double depth, double maxWeight, char kind )
+    protected Container(double containerHeight, double containerWeight, double containerDepth, double maxLoadWeight, char kind )
     {
-        _weight = weight;
-        _height = height;
+        _containerHeight = containerHeight;
         _containerWeight = containerWeight;
-        _depth = depth;
-        _maxWeight = maxWeight;
+        _containerDepth = containerDepth;
+        _maxLoadWeight = maxLoadWeight;
         _serialNumber = CreateSerialNumber(kind);
     }
 
-    public double Weight
+    public double LoadWeight
     {
-        get { return _weight;}
+        get { return _loadWeight;}
         set
         {
             if (value < 0)
@@ -30,12 +29,12 @@ public abstract class Container
                 throw new ArgumentException("Weight cannot be less than zero");
             }
 
-            _weight = value;
+            _loadWeight = value;
         }
     }
-    public double Height
+    public double ContainerHeight
     {
-        get { return _height;}
+        get { return _containerHeight;}
         set
         {
             if (value < 0)
@@ -43,7 +42,7 @@ public abstract class Container
                 throw new ArgumentException("Height cannot be less than zero");
             }
 
-            _height = value;
+            _containerHeight = value;
         }
     }
     public double ContainerWeight
@@ -55,10 +54,33 @@ public abstract class Container
             {
                 throw new ArgumentException("Container weight cannot be less than zero");
             }
-
             _containerWeight = value;
         }
     }
+
+    public double ContainerDepth
+    {
+        get => _containerDepth;
+        set
+        {
+            if (value < 0)
+            {
+                throw new ArgumentException("Container weight cannot be less than zero");
+            }
+            _containerDepth = value;
+        }    }
+
+    public double MaxLoadWeight
+    {
+        get => _maxLoadWeight;
+        set
+        {
+            if (value < 0)
+            {
+                throw new ArgumentException("Container weight cannot be less than zero");
+            }
+            _maxLoadWeight = value;
+        }    }
 
     private static String CreateSerialNumber(char kind)
     {
@@ -66,25 +88,42 @@ public abstract class Container
     } 
 }
 
-public class GasContainer : Container
+public class LiquidContainer : Container
 {
-    public GasContainer(double weight, double height, double containerWeight, double depth, double maxWeight) : base(weight, height, containerWeight, depth, maxWeight, 'G')
+    public LiquidContainer(double containerHeight, double containerWeight, double containerDepth, double maxLoadWeight) : base( containerHeight, containerWeight, containerDepth, maxLoadWeight, 'L')
     {
         
     }
+    
+    public void loadContainer (){}
+}
+public class GasContainer : Container
+{
+    public GasContainer(double containerHeight, double containerWeight, double containerDepth, double maxLoadWeight) : base( containerHeight, containerWeight, containerDepth, maxLoadWeight, 'G')
+    {
+        
+    }
+    
+    public void loadContainer (){}
 }
 
 public class CoolingContainer : Container
 {
-    public CoolingContainer(double weight, double height, double containerWeight, double depth, double maxWeight) : base(weight, height, containerWeight, depth, maxWeight, 'C')
+    public CoolingContainer(double containerHeight, double containerWeight, double containerDepth, double maxLoadWeight) : base( containerHeight, containerWeight, containerDepth, maxLoadWeight, 'C')
     {
         
     }
 }
 
 
-public class IHazardNotifier : Exception {
-    public IHazardNotifier(string message) : base(message)
+public interface IHazardNotifier
+{
+    public void unsafeCommuniaction(string message)
     {
+        //Console.Error(message);
     }
+}
+
+public class OverfillException : Exception
+{
 }
