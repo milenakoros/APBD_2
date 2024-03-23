@@ -3,7 +3,7 @@
 
 public class CoolingContainer : Container
 {
-    private static Dictionary<string, double> productsList= new Dictionary<string, double>()
+    private static Dictionary<string, double> _productsList= new Dictionary<string, double>()
     {
         { "bananas", 13.3 }, { "chocolate", 18 }, { "fish", 2 }, { "meat", -15 }, { "ice cream", -18 },
         {"frozen pizza", -30}, {"cheese", 7.2}, {"sausages", 5},{"butter",20.5},{"eggs",19}
@@ -27,25 +27,24 @@ public class CoolingContainer : Container
                 throw new OverfillException(SerialNumber);
             }
 
-            if (!productsList.ContainsKey(cargoName))
+            if (!_productsList.ContainsKey(cargoName))
             {
                 Console.WriteLine(
-                    "Podanego produktu nie ma na liście, czy chcesz go dodać wraz z informacją w jakiej temperatuze powinien być przechowywany?\n{y/n}");
-                string decision = Console.ReadLine();
+                    "The specified product is not on the list, do you want to add it and the temperature at which it should be stored?\n{y/n}");                
+                string? decision = Console.ReadLine();
                 if (decision != "y")
                 {
-                    throw new Exception("Brak produktu na liscie");
+                    return;
                 }
 
-                Console.WriteLine($"Podaj temperaturę przechowywania dla {cargoName}:");
+                Console.WriteLine($"Enter storage temperature for {cargoName}:");
                 double temperature = Console.Read();
-                productsList.Add(cargoName, temperature);
+                _productsList.Add(cargoName, temperature);
             }
 
-            if (productsList[cargoName] > ContainerTemperature)
+            if (_productsList[cargoName] > ContainerTemperature)
             {
-                //dopisac zmiane temp w kontenerze?
-                Console.WriteLine("Temperatura w kontenerze jest za niska. Nie załadowano produktu");
+                Console.WriteLine("The temperature in the container is too low. Product not loaded");
             }
             else
             {

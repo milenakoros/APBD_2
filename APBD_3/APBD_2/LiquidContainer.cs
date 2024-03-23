@@ -4,15 +4,26 @@ public class LiquidContainer : Container
 {
     private bool IsDangerous { get; set; }
 
-    public LiquidContainer(double containerHeight, double containerWeight, double containerDepth, double maxLoadWeight, bool isDangerous) 
+    public LiquidContainer(double containerHeight, double containerWeight, double containerDepth, double maxLoadWeight) 
         : base( containerHeight, containerWeight, containerDepth, maxLoadWeight, 'L')
     {
         LoadWeight = 0;
-        IsDangerous = isDangerous;
     }
 
     public override void Load(string cargoName, double cargoWeight)
+    
     {
+        Console.WriteLine("Is liquid dangerous? Then you can fill only the half of the container.\ny - yes\nanything else - no");
+        string? decision = Console.ReadLine();
+        if (decision == "y")
+        {
+            IsDangerous = true;
+        }
+        else
+        {
+            IsDangerous = false;
+        }
+        
         if (IsEmpty() || (cargoName == CargoProductName && cargoWeight < MaxLoadWeight - LoadWeight))
         {
             if (IsDangerous)
@@ -30,7 +41,7 @@ public class LiquidContainer : Container
                 }
             }
             CargoProductName = cargoName;
-            LoadWeight = cargoWeight;
+            LoadWeight += cargoWeight;
             Console.WriteLine("Container loaded successfully");
         }
         else

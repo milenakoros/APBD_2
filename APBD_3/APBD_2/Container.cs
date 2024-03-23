@@ -9,7 +9,7 @@ public abstract class Container
     private double _maxLoadWeight;
     public string SerialNumber { get; set; }
     public string? CargoProductName { get; set; }
-    private static int _counter = 0;
+    private static int _counter = 1;
 
     protected Container(double containerHeight, double containerWeight, double containerDepth, double maxLoadWeight, char kind )
     {
@@ -17,6 +17,7 @@ public abstract class Container
         _containerWeight = containerWeight;
         _containerDepth = containerDepth;
         _maxLoadWeight = maxLoadWeight;
+        _loadWeight = 0;
         SerialNumber = CreateSerialNumber(kind);
     }
 
@@ -95,7 +96,7 @@ public abstract class Container
     }
     public override string ToString()
     {
-        return $"Container: SerialNumber={SerialNumber}, ProductName={CargoProductName}, ProductWeight={_loadWeight}, " +
+        return $"SerialNumber={SerialNumber}, ProductName={CargoProductName}, ProductWeight={_loadWeight}, " +
                $"ContainerHeight={_containerHeight}, ContainerWeight={_containerWeight}, ContainerDepth={_containerDepth}, MaxLoadWeight={_maxLoadWeight}";
     }
 }
@@ -105,7 +106,6 @@ public interface IHazardNotifier
 {
     void NotifyHazard(string message);
 }
-
 
 public class OverfillException : Exception
 {

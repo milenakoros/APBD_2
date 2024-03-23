@@ -39,7 +39,7 @@ public class GasContainer : Container, IHazardNotifier
         Console.WriteLine($"Hazard detected in LiquidContainer {SerialNumber}: {message}");
     }
 
-    public bool IsEmpty()
+    public new bool IsEmpty()
     {
         return LoadWeight <= 0.05 * MaxLoadWeight;
     }
